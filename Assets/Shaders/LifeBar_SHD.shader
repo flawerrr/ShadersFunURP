@@ -1,4 +1,4 @@
-Shader "Unlit/LifeBar_SHD"
+Shader "MyShaders/LifeBar_SHD"
 {
     Properties
     {
