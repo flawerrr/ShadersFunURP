@@ -13,7 +13,6 @@ Shader "MyShaders/LifeBar_SHD"
 
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
             
             CGPROGRAM
             #pragma vertex vert
@@ -45,14 +44,43 @@ Shader "MyShaders/LifeBar_SHD"
                 return o;
             }
 
+            float InvesrseLerp(float a, float b, float t)
+            {
+                return (t-a)/(b-a);
+            }
+
             fixed4 frag (Interpolators i) : SV_Target
             {
-                float gradient = float2( i.uv );
+                // Capsule Sdf calculation
+                float2 coords = float2( i.uv.x * 8, i.uv.y );
+                float2 segment = float2( clamp( coords.x, 0.5, 7.5 ), 0.5) ;
+
+                float sdf = distance( coords, segment ) - 0.5;
+                float border =  step(sdf + 0.2, .1);
+                clip( -sdf );
+                
+
+                
+                float gradient = float( i.uv.x );
+
+                float _tLife = saturate ( InvesrseLerp( 0.2, 0.8, _Life) );
+                
                 gradient = 1 - step( _Life, gradient );
-                fixed4 barColor = lerp(_ColorA, _ColorB, _Life) ;
+                fixed4 barColor = lerp( _ColorA, _ColorB, _tLife ) ;
 
                 fixed4 finalColor = barColor * gradient;
-                finalColor = fixed4(finalColor.rgb, gradient);
+                
+                //clip(gradient - 0.1);
+
+                if( _Life < 0.2 )
+                {
+                    float flash = cos( _Time.y * 15 ) * 0.5 + 1;
+                    finalColor *= flash;
+                }
+                
+                finalColor = fixed4( finalColor.rgb, gradient );
+
+                return lerp( 0, finalColor, border);
 
                 return finalColor;
             }
