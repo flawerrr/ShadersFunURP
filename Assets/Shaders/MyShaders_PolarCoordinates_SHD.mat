@@ -29,7 +29,7 @@ Material:
     - _Center: 0.5
     - _CenterX: 0.5
     - _CenterY: 0.5
-    - _LengthScale: -1.11
+    - _LengthScale: -1.8
     - _RadialScale: 0.33
     m_Colors: []
   m_BuildTextureStacks: []
